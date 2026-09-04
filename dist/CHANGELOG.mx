@@ -1,0 +1,22 @@
+@meta
+  project: HMLR
+  version: 1.0.0
+  release_date: 2026-09-04
+  author: hyperlibs
+
+@model ChangelogEntry
+  category: string
+  component: string
+  description: string
+
+# 📜 HMLR Changelog: CHANGELOG.mx
+
+---
+
+## 🚀 Version 1.0.0 (2026-09-04) | @model ChangelogEntry
+| Feature | Core Kernel   | Zero-copy streaming parser for .mx spatial coordinate and tabular schema grammar.   |
+| Feature | Compiler FX   | Functional immutable compiler kernel, AST, and HIR evaluation engine in pure .fx.  |
+| Feature | Diagnostics   | AI self-healing diagnostic engine streaming deterministic @diag FX-XXXX error codes.|
+| Feature | DevTools Ext  | Multi-browser WebExtension (MV3) targeting Chromium, Firefox, and Safari with 4 panels: Signals, Hypermedia Audit, 3D Spatial HUD, and Agentic .mx Telemetry. |
+| Feature | Ecosystem Bus | Ingestion and boundary verification client for UPDATE.mx master timeline.           |
+| Governance | Zero-Node  | Strict ban on Node.js/NPM; 100% native Rust/Cargo core and standalone binaries.     |

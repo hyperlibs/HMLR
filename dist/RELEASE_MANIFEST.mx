@@ -1,0 +1,30 @@
+@meta
+  release: "HMLR v1.0.0"
+  version: "1.0.0"
+  tag: "v1.0.0"
+  timestamp: "2026-09-04T14:40:00Z"
+  status: "OFFICIAL_RELEASE"
+  ecosystem: "hyperlibs"
+
+@model ReleaseArtifact
+  name: string
+  target_platform: string
+  file_size_bytes: int
+  sha256: string
+  format: string
+
+# 📦 HMLR v1.0.0 Official Release Manifest
+
+---
+
+## 🏛️ Release Artifacts | @model ReleaseArtifact
+| hmlr.exe                 | Windows x86_64 (Standalone Native CLI)       |  188928 | e01ae66ec3902601708f0e7883dfdfae7a057e66172ada2ac7cdfc86dfe7bbcf | PE Executable     |
+| hmlr-devtools-v1.0.0.zip | Chromium / Gecko (Firefox) / WebKit (Safari) |   12126 | 55f68d934a9aa7c3af13f85285823d21b4e606f762573b511c398b0d3e82cfe5 | WebExtension (MV3)|
+
+---
+
+## 🔒 Ecosystem Verification
+- Zero Node.js / NPM dependencies
+- 100% Rust / Native-first execution core
+- Sub-50ms Hypermedia Velocity Auditor (Lighthouse Bypass)
+- Streaming zero-copy `.mx` parser and `.fx` HIR compiler kernel
