@@ -1,7 +1,13 @@
 /**
  * HMLR DevTools Entrypoint
- * Registers the 4 inspector panels in Chromium / Firefox DevTools.
+ * Registers the 4 inspector panels and initializes targeted tab inspection.
  */
+
+const tabId = chrome.devtools.inspectedWindow.tabId;
+
+// Establish background port for this specific inspected tab
+const bgPort = chrome.runtime.connect({ name: `hmlr-devtools-${tabId}` });
+bgPort.postMessage({ name: 'init', tabId });
 
 chrome.devtools.panels.create(
   '⚡ HMLR Signals',

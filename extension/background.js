@@ -1,38 +1,41 @@
 /**
  * HMLR DevTools Background Service Worker
- * Multiplexes communication between inspected tabs and DevTools panels.
+ * Targeted Tab Multiplexer: Activates telemetry ONLY on tabs where DevTools is open.
  */
 
-const connections = new Map();
+const activeTabConnections = new Map();
 
 chrome.runtime.onConnect.addListener(port => {
-  const extensionListener = (message, sender) => {
+  let boundTabId = null;
+
+  const extensionListener = (message) => {
     if (message.name === 'init' && message.tabId) {
-      connections.set(message.tabId, port);
-      return;
+      boundTabId = message.tabId;
+      activeTabConnections.set(boundTabId, port);
+      // Explicitly notify the specific content script that DevTools is inspecting it
+      chrome.tabs.sendMessage(boundTabId, { type: 'HMLR_ACTIVATE_TAB', tabId: boundTabId }).catch(() => {});
     }
   };
 
   port.onMessage.addListener(extensionListener);
 
   port.onDisconnect.addListener(() => {
-    for (const [tabId, p] of connections.entries()) {
-      if (p === port) {
-        connections.delete(tabId);
-        break;
-      }
+    if (boundTabId) {
+      activeTabConnections.delete(boundTabId);
+      // Notify the specific tab content script to deactivate telemetry listeners
+      chrome.tabs.sendMessage(boundTabId, { type: 'HMLR_DEACTIVATE_TAB', tabId: boundTabId }).catch(() => {});
     }
   });
 });
 
-// Relay messages from content script to devtools panel
+// Relay messages from content script to the corresponding DevTools panel port
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (sender.tab && sender.tab.id) {
     const tabId = sender.tab.id;
-    if (connections.has(tabId)) {
-      connections.get(tabId).postMessage(request);
+    if (activeTabConnections.has(tabId)) {
+      activeTabConnections.get(tabId).postMessage(request);
     }
   }
-  sendResponse({ status: 'ok' });
+  sendResponse({ status: 'relayed' });
   return true;
 });
