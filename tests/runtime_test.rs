@@ -1,7 +1,11 @@
 //! HMLR Native Runtime Tests (Rust Cargo Test Harness)
 //! Zero-Node, pure native test verification.
 
-use hmlr_core::{MXParser, HIREnv, HIREvaluator, HIRNode, HIRVal, HMLRProvisioner};
+use hmlr_core::{
+    MXParser, HIREnv, HIREvaluator, HIRNode, HIRVal, HMLRProvisioner,
+    SpatialEntityTelemetry, SpatialInspector, SpatialSnapshot,
+};
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -85,4 +89,32 @@ fn test_installer_environment_detection() {
     let report = HMLRProvisioner::inspect_environment();
     assert!(!report.browsers.is_empty(), "Should detect at least one browser target");
     assert!(report.runtime_path.to_string_lossy().contains(".hmlr"), "Default install directory must be .hmlr");
+}
+
+#[test]
+fn test_spatial_htmfx_inspector() {
+    let snapshot = SpatialSnapshot {
+        frame_id: 1,
+        delta_time_ms: 8.33,
+        active_cameras: 1,
+        total_entities: 1,
+        total_photons: 1000,
+        physics_step_ms: 0.15,
+        entities: vec![SpatialEntityTelemetry {
+            id: "hero_box".to_string(),
+            entity_type: "VolumetricBox".to_string(),
+            position: [0.0, 1.0, 0.0],
+            rotation_euler_deg: [0.0, 45.0, 0.0],
+            scale: [1.0, 1.0, 1.0],
+            physics_active: true,
+            linear_velocity: Some([0.0, -9.8, 0.0]),
+            active_particles: Some(1000),
+            metadata: HashMap::new(),
+        }],
+    };
+
+    let output = SpatialInspector::inspect_snapshot(&snapshot);
+    assert!(output.contains("@model SpatialEntityStatus"));
+    assert!(output.contains("hero_box"));
+    assert!(output.contains("VolumetricBox"));
 }
