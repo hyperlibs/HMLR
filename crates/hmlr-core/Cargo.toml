@@ -1,0 +1,13 @@
+[package]
+name = "hmlr-core"
+version = "1.0.0"
+edition = "2021"
+authors = ["hyperlibs"]
+description = "High-velocity zero-copy streaming .mx parser and .fx HIR execution VM"
+license = "MIT"
+
+[dependencies]
+
+[[test]]
+name = "runtime_test"
+path = "../../tests/runtime_test.rs"

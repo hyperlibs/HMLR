@@ -1,0 +1,13 @@
+[package]
+name = "hmlr-wasm"
+version = "1.0.0"
+edition = "2021"
+authors = ["hyperlibs"]
+description = "Ultra-lean <50KB WebAssembly VM for Cloudflare Workers, browsers, and DevTools"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+hmlr-core = { path = "../hmlr-core" }

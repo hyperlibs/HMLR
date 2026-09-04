@@ -1,0 +1,50 @@
+@meta
+  project: HMLR
+  title: HyperMedia Language Runtime — Canonical Architecture & Specification
+  version: 1.0.0
+  runtime: hmlr@1.0
+  repo: github.com/hyperlibs/HMLR
+  ecosystem_host: github.com/hyperlibs/htmxUI
+  ecosystem_spatial: github.com/hyperlibs/htmfx
+  sync_bus: https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx
+  toolchain: Rust_Cargo_Wasm
+
+@type Subsystem = hmlr_core* | hmlr_wasm | compiler_fx | parser_mx | diagnostics | extension
+@type NativeTarget = wasm32_unknown_unknown* | x86_64_pc_windows_msvc | x86_64_unknown_linux_gnu | aarch64_apple_darwin
+
+@model ArchitectureLayer
+  name: string
+  subsystem: Subsystem
+  toolchain: string
+  target: string
+  responsibility: string
+  max_size_budget: string
+
+@model ProhibitedPattern
+  pattern: string
+  reason: string
+  alternative: string
+
+# ⚙️ HMLR Native Architecture Specification: hmlr.mx
+HMLR (HyperMedia Language Runtime) is the universal runtime, execution engine, and developer inspection layer for the hyperlibs ecosystem.
+Built exclusively using native Rust (`crates/`), pure `.fx` functional pipelines, and `.mx` spatial/tabular schemas with zero Node.js/NPM baggage.
+
+---
+
+## 🏛️ Architecture Layers | @model ArchitectureLayer
+| name                  | subsystem    | toolchain     | target                      | responsibility                                                                                                  | max_size_budget |
+| HMLR Core Kernel      | hmlr_core    | Rust (Cargo)  | Native Binary + Static Lib  | Zero-copy streaming .mx parser, HIR compiler, pattern matcher, and ecosystem sync bus client.                   | < 500KB (CLI)   |
+| HMLR Wasm VM          | hmlr_wasm    | Rust / Wasm   | wasm32-unknown-unknown      | Ultra-lean edge execution VM for Cloudflare Workers & browser devtools (fetch(req) -> Response).                | < 50KB (.wasm)  |
+| .fx Compiler Logic    | compiler_fx  | Pure .fx      | HMLR Intermediate Rep (HIR) | Immutable functional grammar, pipeline operations (|>), and Result<T,E> monadic evaluation.                     | 0KB (Embedded)  |
+| .mx Spatial Grammar   | parser_mx    | Pure .mx      | Flat coordinate AST         | Flat coordinate grammar (@pin, @3d, @model, and TSV tables) with 75% token reduction vs JSON.                  | 0KB (Embedded)  |
+| AI Self-Healing Diags | diagnostics  | Pure .mx/.fx  | @diag FX-XXXX Stream        | Deterministic diagnostic streaming and autonomous code repair recommendations.                                  | 0KB (Embedded)  |
+| DevTools Extension    | extension    | Manifest V3   | Chrome / Firefox (.crx)     | Passive inspection layer with 4 panels: Signals, Hypermedia Audit, 3D Spatial HUD, and Agentic .mx Telemetry.   | < 100KB (Ext)   |
+
+---
+
+## ⛔ Zero-Node / NPM Hard Prohibitions | @model ProhibitedPattern
+| pattern                 | reason                                                           | alternative                                                              |
+| Node.js Built-ins       | node:fs, node:child_process, @types/node violate edge purity    | Rust std::fs in CLI or Web standard fetch / Response in Wasm edge        |
+| NPM Dependency Graphs   | Package rot, supply chain bloat, slow startup                   | Rust Cargo crates, standalone Wasm binary, or single-binary Bun runners  |
+| Verbose TS Monoliths    | JS coercion bugs, verbose syntax, high token consumption        | Pure .fx functional code + Rust core kernel                              |
+| JSON Internal Schemas   | 75% token overhead and redundant punctuation nesting             | Pure .mx flat spatial coordinate grammar and tabular row schemas         |

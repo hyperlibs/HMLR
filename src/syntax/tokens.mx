@@ -1,0 +1,28 @@
+@meta
+  spec: "HMLR Token Classification Matrix"
+  version: "1.0.0"
+  status: "LOCKED"
+
+@type LexerState = initial* | inside_meta | inside_table | inside_spatial | in_fx_expr
+
+@model TokenSpec
+  token_id: string
+  pattern: string
+  category: string
+  zero_copy_strategy: string
+
+# 🔤 Token Classification Matrix: tokens.mx
+
+---
+
+## 🏛️ Token Specifications | @model TokenSpec
+| token_id        | pattern                                | category    | zero_copy_strategy                                        |
+| TOK_DIRECTIVE   | `^@[A-Za-z0-9_]+`                      | Directive   | Substring slice &str with length tag                      |
+| TOK_KEY_VAL     | `^[A-Za-z0-9_]+:\s*`                   | KeyValue    | Split on ASCII colon index; zero allocation               |
+| TOK_TABLE_ROW   | `^\|.*\|$`                             | Tabular     | In-place split on ASCII pipe (|) delimiter                 |
+| TOK_TABLE_DIV   | `^\|(\s*:?-+:?\s*\|)+$`                | Tabular     | Fast pattern test; skipped in row emission                |
+| TOK_PIN_COORD   | `\(([-0-9.,\s]+)\)`                    | Spatial     | Fast SIMD ASCII float scanner                             |
+| TOK_3D_VEC3     | `(pos\|rot\|scale)=\[([-0-9.,\s]+)\]`  | Spatial     | Fast 3-element float array buffer parser                  |
+| TOK_DIAG_CODE   | `FX-[0-9]{4}`                          | Diagnostic  | Direct 32-bit integer packed hash comparison              |
+| TOK_FX_PIPE     | `\|>`                                  | Compiler_FX | 2-byte ASCII token match; lowers to forward apply         |
+| TOK_FX_ARROW    | `->`                                   | Compiler_FX | 2-byte ASCII match; defines lambda / match branch         |

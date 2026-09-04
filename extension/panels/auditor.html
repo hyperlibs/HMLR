@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HMLR Hypermedia Velocity Auditor</title>
+  <style>
+    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
+    h2 { color: #2ea043; font-size: 14px; margin-top: 0; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; }
+    .card-title { font-size: 11px; color: #8b949e; text-transform: uppercase; }
+    .card-val { font-size: 20px; font-weight: bold; color: #58a6ff; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
+    th { background: #161b22; color: #8b949e; }
+    .passed { color: #3fb950; }
+    .warning { color: #d29922; }
+  </style>
+</head>
+<body>
+  <h2>🚀 Hypermedia Velocity Auditor</h2>
+  <div class="metrics-grid">
+    <div class="card">
+      <div class="card-title">Average Swap Latency</div>
+      <div class="card-val" id="avg-latency">12.4 ms</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Zero-JS Purity</div>
+      <div class="card-val" id="js-purity" style="color:#3fb950;">100%</div>
+    </div>
+    <div class="card">
+      <div class="card-title">OOB Fragments Streamed</div>
+      <div class="card-val" id="oob-count">24</div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Target Element</th>
+        <th>Swap Latency</th>
+        <th>Payload Size</th>
+        <th>Zero-JS Purity</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="audits-body">
+      <tr>
+        <td>#main-feed</td>
+        <td>14.2 ms</td>
+        <td>1.4 KB</td>
+        <td>100% (Pure HTML)</td>
+        <td><span class="passed">PASS (Sub-50ms)</span></td>
+      </tr>
+      <tr>
+        <td>#user-status</td>
+        <td>6.1 ms</td>
+        <td>320 B</td>
+        <td>100% (Pure HTML)</td>
+        <td><span class="passed">PASS (Sub-50ms)</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <script src="auditor.js"></script>
+</body>
+</html>

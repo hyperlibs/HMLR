@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HMLR Signals Inspector</title>
+  <style>
+    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
+    h2 { color: #58a6ff; font-size: 14px; margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+    th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
+    th { background: #161b22; color: #8b949e; }
+    .badge { background: #238636; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+  </style>
+</head>
+<body>
+  <h2>⚡ HMLR Reactive Signals Tree</h2>
+  <div id="status">Monitoring reactive signals cascade...</div>
+  <table id="signals-table">
+    <thead>
+      <tr>
+        <th>Signal ID</th>
+        <th>Current Value</th>
+        <th>Subscribers</th>
+        <th>Frequency (Hz)</th>
+      </tr>
+    </thead>
+    <tbody id="signals-body">
+      <tr><td>sys.fps</td><td>120.0</td><td>4</td><td><span class="badge">120 Hz</span></td></tr>
+      <tr><td>camera.target</td><td>[0, 1.5, -4]</td><td>2</td><td><span class="badge">60 Hz</span></td></tr>
+      <tr><td>hud.active_tab</td><td>"signals"</td><td>1</td><td><span class="badge">0 Hz</span></td></tr>
+    </tbody>
+  </table>
+  <script src="signals.js"></script>
+</body>
+</html>

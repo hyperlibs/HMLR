@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HMLR 3D Spatial HUD Inspector</title>
+  <style>
+    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
+    h2 { color: #d2a8ff; font-size: 14px; margin-top: 0; }
+    .spatial-banner { background: #1f1d2e; border: 1px solid #6e40c9; padding: 8px 12px; border-radius: 4px; font-size: 11px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
+    th { background: #161b22; color: #8b949e; }
+    .coord { color: #79c0ff; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>📐 3D Spatial HUD & Coordinate Telemetry</h2>
+  <div class="spatial-banner">
+    🔒 <strong>Zero 3D Shader Overhead</strong>: Passive inspection only. 3D physics and rendering are isolated in <code>htmFX</code>.
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Spatial Node / Anchor</th>
+        <th>Type</th>
+        <th>Position (X, Y, Z)</th>
+        <th>Rotation (Pitch, Yaw, Roll)</th>
+        <th>Scale</th>
+      </tr>
+    </thead>
+    <tbody id="spatial-body">
+      <tr>
+        <td>@pin main_camera</td>
+        <td>PerspectiveCamera</td>
+        <td><span class="coord">(0.00, 1.80, 5.00)</span></td>
+        <td>(0.0°, 0.0°, 0.0°)</td>
+        <td>[1.0, 1.0, 1.0]</td>
+      </tr>
+      <tr>
+        <td>@3d hero_mesh</td>
+        <td>VolumetricBox</td>
+        <td><span class="coord">(0.00, 0.00, 0.00)</span></td>
+        <td>(0.0°, 45.0°, 0.0°)</td>
+        <td>[2.0, 2.0, 2.0]</td>
+      </tr>
+      <tr>
+        <td>@pin light_sun</td>
+        <td>DirectionalPhoton</td>
+        <td><span class="coord">(10.00, 25.00, 10.00)</span></td>
+        <td>(-45.0°, 30.0°, 0.0°)</td>
+        <td>[1.0, 1.0, 1.0]</td>
+      </tr>
+    </tbody>
+  </table>
+  <script src="spatial.js"></script>
+</body>
+</html>

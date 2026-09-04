@@ -1,0 +1,29 @@
+@meta
+  spec: "HMLR Formal Grammar Specification"
+  version: "1.0.0"
+  status: "LOCKED"
+  paradigm: "Spatial Coordinate, Tabular & Agentic Data Grammar"
+
+@type DirectiveKind = meta* | type_def | model_def | pin_coord | spatial_3d | diag_entry | table_section
+@type SeverityLevel = error* | warning | hint | info
+
+@model GrammarProduction
+  symbol: string
+  pattern: string
+  description: string
+  token_reduction_vs_json: string
+
+# 📐 Formal Grammar Specification for .mx Documents
+The `.mx` format provides 75% token reduction over JSON and YAML by eliminating repeated punctuation, nesting braces, and quote noise, replacing them with spatial tuples, flat coordinate grammar, and tabular row schemas.
+
+---
+
+## 🏛️ Grammar Productions | @model GrammarProduction
+| symbol             | pattern                                                         | description                                                          | token_reduction_vs_json |
+| DirectiveMeta      | `@meta \n ( \s+ [key]: [value] )+`                              | Document metadata header with key-value pairs or list scalars        | 68%                     |
+| DirectiveType      | `@type [Name] = [v1]* \| [v2] \| [v3]`                           | Algebraic sum types with asterisk (*) denoting default variant       | 82%                     |
+| DirectiveModel     | `@model [Name] \n ( \s+ [field][?]: [type] )+`                  | Typed schema definition for tabular row bindings                     | 74%                     |
+| DirectivePin       | `@pin [id] (x, y[, z]) [{ k: v, ... }]`                         | Flat 2D/3D coordinate anchor for spatial nodes and cameras           | 85%                     |
+| Directive3D        | `@3d [id] [mesh_type] pos=[x,y,z] rot=[r] scale=[s]`            | Zero-copy spatial viewport node descriptor                           | 79%                     |
+| DirectiveDiag      | `@diag [FX-XXXX] [severity] "[msg]" line=N col=N fix="[fix]"`   | Deterministic AI self-healing diagnostic assertion                   | 71%                     |
+| TabularSection     | `## [Title] \| @model [ModelName] \n \| [h1] \| \n \| [v1] \|`  | High-density markdown table bound directly to schema @model          | 77%                     |

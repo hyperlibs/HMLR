@@ -1,0 +1,35 @@
+@meta
+  catalog: "HMLR Diagnostic Codes"
+  prefix: "FX"
+  version: "1.0.0"
+  status: "ACTIVE"
+
+@type Severity = error* | warning | hint
+@type DiagnosticDomain = Syntax* | Boundary | Type | Velocity | Sync
+
+@model DiagnosticSpec
+  code: string
+  domain: DiagnosticDomain
+  severity: Severity
+  title: string
+  repair_strategy: string
+
+# 🚨 HMLR AI Self-Healing Error Catalog: codes.mx
+Deterministic error codes enabling autonomous AI agent remediation and ecosystem boundary enforcement.
+
+---
+
+## 📋 Diagnostic Matrix | @model DiagnosticSpec
+| code    | domain   | severity | title                                                            | repair_strategy                                                                                             |
+| FX-1001 | Syntax   | error    | Invalid .mx syntax or directive format                           | Correct directive header to match @meta, @type, @model, @pin, @3d, or @diag                                 |
+| FX-1002 | Syntax   | warning  | Table without declared @model schema                             | Declare @model ModelName above table with typed field definitions                                           |
+| FX-1003 | Syntax   | error    | Malformed spatial coordinate tuple                               | Format coordinates as (x, y) or (x, y, z) with valid floating-point numbers                                 |
+| FX-2001 | Boundary | error    | UI primitives must belong exclusively to htmxUI                  | Delegate UI components, buttons, and form widgets to hyperlibs/htmxUI                                       |
+| FX-2002 | Boundary | error    | 3D shaders/engines must belong exclusively to htmFX              | Delegate 3D rendering and physics engines to hyperlibs/htmfx; HMLR retains passive inspection only          |
+| FX-2003 | Boundary | error    | Internal schemas must use pure .mx/.fx, never JSON               | Migrate internal configuration/diagnostic schemas to .mx tabular and spatial syntax                         |
+| FX-2004 | Boundary | error    | Heavy Node.js runtime built-in detected in core VM               | Remove node:fs / child_process imports; use standard web/Wasm edge APIs (fetch, Request, Response)          |
+| FX-3001 | Type     | error    | Type mismatch in .fx functional pipeline                         | Ensure types align across pipeline (|>) or pattern match arms                                               |
+| FX-3002 | Type     | warning  | Non-exhaustive pattern match in .fx match expression             | Add fallback wildcard (_) or complete all enum/type variant arms                                            |
+| FX-4001 | Velocity | warning  | Hypermedia swap latency exceeds budget threshold (>50ms)         | Split large payload into micro-fragments or use async hx-swap="outerHTML swap:10ms"                          |
+| FX-4002 | Velocity | error    | Zero-JS purity violation detected in hypermedia response payload | Move client state into HMLR SignalStore or reactive htmxUI attributes instead of raw JS scripts            |
+| FX-5001 | Sync     | warning  | Ecosystem event bus synchronization divergence detected          | Run `hmlr sync` to re-align with UPDATE.mx master timeline                                                  |

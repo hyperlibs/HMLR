@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>HMLR Agentic .mx Telemetry</title>
+  <style>
+    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
+    h2 { color: #f0883e; font-size: 14px; margin-top: 0; }
+    .stream-container { background: #010409; border: 1px solid #30363d; border-radius: 6px; padding: 12px; height: 350px; overflow-y: auto; font-size: 11px; white-space: pre-wrap; color: #7ee787; }
+    .diag-err { color: #f85149; }
+    .diag-warn { color: #d29922; }
+    .diag-fix { color: #58a6ff; }
+  </style>
+</head>
+<body>
+  <h2>🤖 Agentic .mx Event Bus & Telemetry Stream</h2>
+  <div class="stream-container" id="mx-stream">
+@meta
+  event_bus: UPDATE.mx
+  status: ACTIVE_AND_SYNCHRONIZED
+  subsystems: 6_ACTIVE
+
+@diag FX-2001 info "Boundary verified: UI primitives isolated in htmxUI"
+@diag FX-2002 info "Boundary verified: 3D physics isolated in htmFX"
+@diag FX-2003 info "Boundary verified: Zero internal JSON; pure .mx schema active"
+@diag FX-2004 info "Boundary verified: Zero Node.js runtime baggage; pure edge Wasm kernel active"
+  </div>
+  <script src="telemetry.js"></script>
+</body>
+</html>
