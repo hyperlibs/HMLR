@@ -1,7 +1,7 @@
 //! HMLR Native Runtime Tests (Rust Cargo Test Harness)
 //! Zero-Node, pure native test verification.
 
-use hmlr_core::{MXParser, HIREnv, HIREvaluator, HIRNode, HIRVal};
+use hmlr_core::{MXParser, HIREnv, HIREvaluator, HIRNode, HIRVal, HMLRProvisioner};
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -78,4 +78,11 @@ fn test_hir_result_monad() {
 
     let result = HIREvaluator::eval(&check_op, &mut env).expect("Eval check");
     assert_eq!(result, HIRVal::Bool(true));
+}
+
+#[test]
+fn test_installer_environment_detection() {
+    let report = HMLRProvisioner::inspect_environment();
+    assert!(!report.browsers.is_empty(), "Should detect at least one browser target");
+    assert!(report.runtime_path.to_string_lossy().contains(".hmlr"), "Default install directory must be .hmlr");
 }
