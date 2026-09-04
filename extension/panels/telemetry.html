@@ -1,30 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>HMLR Agentic .mx Telemetry</title>
   <style>
-    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
-    h2 { color: #f0883e; font-size: 14px; margin-top: 0; }
-    .stream-container { background: #010409; border: 1px solid #30363d; border-radius: 6px; padding: 12px; height: 350px; overflow-y: auto; font-size: 11px; white-space: pre-wrap; color: #7ee787; }
-    .diag-err { color: #f85149; }
-    .diag-warn { color: #d29922; }
-    .diag-fix { color: #58a6ff; }
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --orange: #f0883e;
+      --green: #3fb950;
+      --accent: #58a6ff;
+      --red: #f85149;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--bg); color: var(--text); margin: 0; padding: 16px; font-size: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; }
+    h1 { font-size: 15px; margin: 0; color: var(--orange); display: flex; align-items: center; gap: 8px; }
+
+    .status-panel { display: flex; justify-content: space-between; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-size: 11px; }
+    .status-badge { background: #23863633; color: var(--green); border: 1px solid #238636; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+
+    .console-box { background: #010409; border: 1px solid var(--border); border-radius: 6px; padding: 12px; height: 380px; overflow-y: auto; font-size: 11px; line-height: 1.5; color: #7ee787; white-space: pre-wrap; }
+    
+    .btn-action { background: #21262d; border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: inherit; }
+    .btn-action:hover { background: #30363d; }
   </style>
 </head>
 <body>
-  <h2>🤖 Agentic .mx Event Bus & Telemetry Stream</h2>
-  <div class="stream-container" id="mx-stream">
-@meta
+  <header>
+    <h1>🤖 Agentic .mx Telemetry & AI Self-Healing</h1>
+    <div>
+      <button class="btn-action" id="btn-clear">Clear Stream</button>
+      <button class="btn-action" id="btn-copy">Copy .mx Stream</button>
+    </div>
+  </header>
+
+  <div class="status-panel">
+    <div>Ecosystem Bus: <strong>https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx</strong></div>
+    <div>Sync Status: <span class="status-badge">SYNCHRONIZED (v2.1.0)</span></div>
+  </div>
+
+  <div class="console-box" id="mx-stream">@meta
   event_bus: UPDATE.mx
   status: ACTIVE_AND_SYNCHRONIZED
-  subsystems: 6_ACTIVE
+  subsystems: [extension, wasm_vm, compiler_fx, parser_mx, diagnostics]
+  timestamp: 2026-09-04T14:35:00Z
 
+@model BoundaryVerification
+  subsystem: string
+  isolated: boolean
+  zero_js_overhead: boolean
+  status: string
+
+## BoundaryVerification | @model BoundaryVerification
+| extension   | true | true | VERIFIED_ACTIVE |
+| wasm_vm     | true | true | VERIFIED_ACTIVE |
+| compiler_fx | true | true | VERIFIED_ACTIVE |
+| parser_mx   | true | true | VERIFIED_ACTIVE |
+| diagnostics | true | true | VERIFIED_ACTIVE |
+
+@diag FX-0000 info "Universal .mx & .fx format locked. Zero Node/NPM overhead."
 @diag FX-2001 info "Boundary verified: UI primitives isolated in htmxUI"
 @diag FX-2002 info "Boundary verified: 3D physics isolated in htmFX"
-@diag FX-2003 info "Boundary verified: Zero internal JSON; pure .mx schema active"
-@diag FX-2004 info "Boundary verified: Zero Node.js runtime baggage; pure edge Wasm kernel active"
   </div>
+
   <script src="telemetry.js"></script>
 </body>
 </html>

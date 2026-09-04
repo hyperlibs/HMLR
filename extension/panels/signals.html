@@ -1,35 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>HMLR Signals Inspector</title>
+  <title>HMLR Reactive Signals Inspector</title>
   <style>
-    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
-    h2 { color: #58a6ff; font-size: 14px; margin-top: 0; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
-    th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
-    th { background: #161b22; color: #8b949e; }
-    .badge { background: #238636; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --purple: #bc8cff;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--bg); color: var(--text); margin: 0; padding: 16px; font-size: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; }
+    h1 { font-size: 15px; margin: 0; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    .controls { display: flex; gap: 8px; margin-bottom: 12px; }
+    input[type="text"] { background: #010409; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; font-family: inherit; font-size: 11px; flex: 1; }
+    
+    .stats-bar { display: flex; gap: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 11px; }
+    .stat-item { display: flex; align-items: center; gap: 6px; }
+    .stat-val { font-weight: bold; color: var(--accent); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+    th { background: var(--card-bg); color: var(--text-muted); font-weight: 600; }
+    tbody tr:hover { background: #161b2280; }
+    
+    .badge-hz { background: #23863633; color: var(--green); border: 1px solid #238636; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+    .badge-sub { background: #8957e533; color: var(--purple); border: 1px solid #8957e5; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
   </style>
 </head>
 <body>
-  <h2>⚡ HMLR Reactive Signals Tree</h2>
-  <div id="status">Monitoring reactive signals cascade...</div>
-  <table id="signals-table">
+  <header>
+    <h1>⚡ HMLR Reactive Signals Inspector</h1>
+    <div style="font-size:10px;color:var(--text-muted);">Zero Memory Leak Architecture</div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-item">Active Signals: <span class="stat-val" id="count-signals">8</span></div>
+    <div class="stat-item">Total Observers: <span class="stat-val" id="count-observers">22</span></div>
+    <div class="stat-item">Cascade Update Rate: <span class="stat-val" style="color:var(--green);">120 FPS Locked</span></div>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="filter-input" placeholder="Filter signals by key (e.g. sys.fps, camera, hud)...">
+  </div>
+
+  <table>
     <thead>
       <tr>
         <th>Signal ID</th>
-        <th>Current Value</th>
-        <th>Subscribers</th>
-        <th>Frequency (Hz)</th>
+        <th>Live State / Value</th>
+        <th>Subscribed DOM Nodes</th>
+        <th>Cascade Frequency</th>
+        <th>Last Updated</th>
       </tr>
     </thead>
     <tbody id="signals-body">
-      <tr><td>sys.fps</td><td>120.0</td><td>4</td><td><span class="badge">120 Hz</span></td></tr>
-      <tr><td>camera.target</td><td>[0, 1.5, -4]</td><td>2</td><td><span class="badge">60 Hz</span></td></tr>
-      <tr><td>hud.active_tab</td><td>"signals"</td><td>1</td><td><span class="badge">0 Hz</span></td></tr>
+      <tr>
+        <td><code>sys.fps</code></td>
+        <td><strong style="color:var(--green);">120.0</strong></td>
+        <td><span class="badge-sub">4 elements</span></td>
+        <td><span class="badge-hz">120 Hz</span></td>
+        <td>Just now</td>
+      </tr>
+      <tr>
+        <td><code>camera.pos</code></td>
+        <td><code>[0.0, 1.8, 5.0]</code></td>
+        <td><span class="badge-sub">2 elements</span></td>
+        <td><span class="badge-hz">60 Hz</span></td>
+        <td>Just now</td>
+      </tr>
+      <tr>
+        <td><code>hud.active_tab</code></td>
+        <td><code>"velocity_audit"</code></td>
+        <td><span class="badge-sub">1 element</span></td>
+        <td><span class="badge-hz">0 Hz (Idle)</span></td>
+        <td>2s ago</td>
+      </tr>
+      <tr>
+        <td><code>spatial.raycast_hit</code></td>
+        <td><code>"hero_mesh"</code></td>
+        <td><span class="badge-sub">3 elements</span></td>
+        <td><span class="badge-hz">12 Hz</span></td>
+        <td>140ms ago</td>
+      </tr>
     </tbody>
   </table>
+
   <script src="signals.js"></script>
 </body>
 </html>

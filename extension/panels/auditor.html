@@ -1,65 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>HMLR Hypermedia Velocity Auditor</title>
   <style>
-    body { font-family: ui-monospace, monospace; background: #0d1117; color: #c9d1d9; margin: 0; padding: 16px; }
-    h2 { color: #2ea043; font-size: 14px; margin-top: 0; }
-    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
-    .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; }
-    .card-title { font-size: 11px; color: #8b949e; text-transform: uppercase; }
-    .card-val { font-size: 20px; font-weight: bold; color: #58a6ff; margin-top: 4px; }
-    table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    th, td { border: 1px solid #30363d; padding: 8px 12px; text-align: left; }
-    th { background: #161b22; color: #8b949e; }
-    .passed { color: #3fb950; }
-    .warning { color: #d29922; }
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #bc8cff;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--bg); color: var(--text); margin: 0; padding: 16px; font-size: 12px; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; }
+    h1 { font-size: 15px; margin: 0; color: var(--green); display: flex; align-items: center; gap: 8px; }
+    .badge-browser { background: #1f242c; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: var(--accent); }
+    
+    .scorecard-row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; margin-bottom: 16px; }
+    .overall-score-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .score-circle { width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: var(--green); margin: 0 auto 8px auto; }
+    .score-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .metric-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
+    .metric-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .metric-val { font-size: 18px; font-weight: bold; color: var(--text); }
+    .metric-sub { font-size: 10px; color: var(--green); margin-top: 2px; }
+
+    .vs-banner { background: #121d2f; border: 1px solid #1f3a5f; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    .vs-banner span { color: var(--accent); font-weight: bold; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+    th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
+    th { background: var(--card-bg); color: var(--text-muted); font-weight: 600; }
+    tbody tr:hover { background: #161b2280; }
+    .status-pass { color: var(--green); font-weight: bold; }
+    .status-warn { color: var(--yellow); font-weight: bold; }
+    .tag { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+    .tag-pure { background: #23863633; color: var(--green); border: 1px solid #238636; }
+    .tag-oob { background: #8957e533; color: var(--purple); border: 1px solid #8957e5; }
   </style>
 </head>
 <body>
-  <h2>🚀 Hypermedia Velocity Auditor</h2>
-  <div class="metrics-grid">
-    <div class="card">
-      <div class="card-title">Average Swap Latency</div>
-      <div class="card-val" id="avg-latency">12.4 ms</div>
+  <header>
+    <h1>🚀 Hypermedia Velocity Auditor <small style="font-size:10px;color:var(--text-muted);font-weight:normal;">(Lighthouse Bypass Engine)</small></h1>
+    <div class="badge-browser" id="browser-target">Universal WebExtension • Cr / Fx / Wk</div>
+  </header>
+
+  <div class="scorecard-row">
+    <div class="overall-score-card">
+      <div class="score-circle" id="velocity-score">99</div>
+      <div class="score-label">Hypermedia Velocity Score</div>
+      <div style="font-size:10px;color:var(--green);margin-top:4px;">Optimal Sub-Millisecond Execution</div>
     </div>
-    <div class="card">
-      <div class="card-title">Zero-JS Purity</div>
-      <div class="card-val" id="js-purity" style="color:#3fb950;">100%</div>
-    </div>
-    <div class="card">
-      <div class="card-title">OOB Fragments Streamed</div>
-      <div class="card-val" id="oob-count">24</div>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-title">Avg Swap Latency</div>
+        <div class="metric-val" id="val-latency">8.4 ms</div>
+        <div class="metric-sub">⚡ 92% faster than 100ms budget</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Zero-JS Purity</div>
+        <div class="metric-val" id="val-purity" style="color:var(--green);">100% Pure</div>
+        <div class="metric-sub">🔒 Zero client hydration weight</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">DOM Payload Efficiency</div>
+        <div class="metric-val" id="val-payload">640 B avg</div>
+        <div class="metric-sub">📦 Micro-fragment streaming active</div>
+      </div>
     </div>
   </div>
+
+  <div class="vs-banner">
+    <div><strong>Lighthouse vs Hypermedia Velocity:</strong> Standard Lighthouse audits measure monolithic JS bundles and TTI hydration delays. HMLR audits raw server partial swap throughput, OOB streaming purity, and Zero-JS compliance.</div>
+  </div>
+
+  <h3 style="font-size:12px;margin:16px 0 8px 0;color:var(--text-muted);text-transform:uppercase;">Live Partial Swap Stream</h3>
   <table>
     <thead>
       <tr>
         <th>Target Element</th>
+        <th>Trigger Event</th>
         <th>Swap Latency</th>
-        <th>Payload Size</th>
-        <th>Zero-JS Purity</th>
+        <th>Payload Bytes</th>
+        <th>OOB Swaps</th>
+        <th>Purity Rating</th>
         <th>Status</th>
       </tr>
     </thead>
-    <tbody id="audits-body">
+    <tbody id="swap-stream-body">
       <tr>
-        <td>#main-feed</td>
-        <td>14.2 ms</td>
-        <td>1.4 KB</td>
-        <td>100% (Pure HTML)</td>
-        <td><span class="passed">PASS (Sub-50ms)</span></td>
+        <td><code>#feed-container</code></td>
+        <td><code>hmlr:poll</code></td>
+        <td><strong>6.2 ms</strong></td>
+        <td>1,240 B</td>
+        <td><span class="tag tag-oob">2 Out-Of-Band</span></td>
+        <td><span class="tag tag-pure">100% HTML</span></td>
+        <td><span class="status-pass">PASS (SUB-10MS)</span></td>
       </tr>
       <tr>
-        <td>#user-status</td>
-        <td>6.1 ms</td>
-        <td>320 B</td>
-        <td>100% (Pure HTML)</td>
-        <td><span class="passed">PASS (Sub-50ms)</span></td>
+        <td><code>#user-badge</code></td>
+        <td><code>click</code></td>
+        <td><strong>4.1 ms</strong></td>
+        <td>280 B</td>
+        <td><span class="tag tag-oob">0 OOB</span></td>
+        <td><span class="tag tag-pure">100% HTML</span></td>
+        <td><span class="status-pass">PASS (SUB-10MS)</span></td>
+      </tr>
+      <tr>
+        <td><code>#metrics-ticker</code></td>
+        <td><code>hmlr:tick</code></td>
+        <td><strong>2.8 ms</strong></td>
+        <td>150 B</td>
+        <td><span class="tag tag-oob">1 Out-Of-Band</span></td>
+        <td><span class="tag tag-pure">100% HTML</span></td>
+        <td><span class="status-pass">PASS (SUB-10MS)</span></td>
       </tr>
     </tbody>
   </table>
+
   <script src="auditor.js"></script>
 </body>
 </html>
