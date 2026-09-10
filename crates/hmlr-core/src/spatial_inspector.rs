@@ -1,7 +1,16 @@
 //! HMLR Spatial & htmFX Telemetry Inspector
-//! Passive inspection layer for htmFX 3D viewports, physics step timings, and particle telemetry.
+//! Passive inspection layer for htmFX 3D viewports, SpatialEdgeDB engine, and particle telemetry.
 
 use std::collections::HashMap;
+
+#[derive(Debug, Clone)]
+pub struct SpatialEdgeDBTelemetry {
+    pub total_cells: usize,
+    pub buffer_size_bytes: usize,
+    pub morton_clusters: usize,
+    pub morton_z_order_efficiency_pct: f32,
+    pub gpu_vertex_view_ready: bool,
+}
 
 #[derive(Debug, Clone)]
 pub struct SpatialEntityTelemetry {
@@ -24,6 +33,7 @@ pub struct SpatialSnapshot {
     pub total_entities: usize,
     pub total_photons: u32,
     pub physics_step_ms: f64,
+    pub edge_db: Option<SpatialEdgeDBTelemetry>,
     pub entities: Vec<SpatialEntityTelemetry>,
 }
 
@@ -33,11 +43,18 @@ impl SpatialInspector {
     pub fn inspect_snapshot(snapshot: &SpatialSnapshot) -> String {
         let mut out = String::new();
         out.push_str("@meta\n");
-        out.push_str(&format!("  inspector: \"HMLR htmFX Spatial HUD\"\n"));
+        out.push_str("  inspector: \"HMLR htmFX Spatial HUD\"\n");
         out.push_str(&format!("  frame_id: {}\n", snapshot.frame_id));
         out.push_str(&format!("  delta_time_ms: {:.2}\n", snapshot.delta_time_ms));
         out.push_str(&format!("  physics_step_ms: {:.2}\n", snapshot.physics_step_ms));
         out.push_str(&format!("  total_photons: {}\n", snapshot.total_photons));
+
+        if let Some(ref db) = snapshot.edge_db {
+            out.push_str(&format!("  edge_db_cells: {}\n", db.total_cells));
+            out.push_str(&format!("  edge_db_bytes: {}\n", db.buffer_size_bytes));
+            out.push_str(&format!("  edge_db_morton_efficiency: {:.1}%\n", db.morton_z_order_efficiency_pct));
+        }
+
         out.push_str("\n@model SpatialEntityStatus\n");
         out.push_str("  id: string\n");
         out.push_str("  entity_type: string\n");

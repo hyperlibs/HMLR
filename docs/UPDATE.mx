@@ -1,73 +1,39 @@
 @meta
   event_bus: UPDATE.mx
-  timestamp: 2026-09-04T15:12:00Z
+  timestamp: 2026-09-10T14:35:00Z
   ecosystem: hyperlibs
   source_repo: hyperlibs/HMLR
   peers: [hyperlibs/htmxUI, hyperlibs/htmfx]
-  version: 2.2.0
-  status: SYNCHRONIZED_AND_ACTIVE
+  version: 3.1.0
+  status: ACTIVE_AND_SYNCHRONIZED
 
-@type RepoTarget = htmxui | htmfx | HMLR | all
-@type Priority = immediate* | high | normal
+@type SystemRole = host_2d_hypermedia | spatial_3d_physics | runtime_and_devtools
+@type DelegationThreshold = dom_limit | spatial_3d | physics_simulation | high_density_pixels
 
-@model EcosystemTimeline
-  step: int
-  topic: string
-  decision: string
-  impact: string
+@model EcosystemAlignmentDirective
+  repo: string
+  role: SystemRole
+  handoff_trigger: string
+  action_required: string
 
-@model RepoInstruction
-  target: RepoTarget
-  priority: Priority
-  title: string
-  action_summary: string
-  action_detail: string
-
-# 🌐 Master Ecosystem Event Bus: UPDATE.mx
-This document is the single source of truth for multi-agent autonomous synchronization across the three hyperlibs repositories:
-1. `htmxUI` (Host Reactive Hypermedia Core ~40KB)
-2. `htmFX` (Spatial 3D & Physics Extension ~17.6KB)
-3. `HMLR` (HyperMedia Language Runtime & Browser DevTools Extension <50KB)
+# 🌐 Master Ecosystem Event Bus: UPDATE.mx v3.1.0
+Single source of truth for multi-agent autonomous synchronization across hyperlibs (`htmxUI` + `htmFX` + `HMLR`).
 
 ---
 
-## 📜 Chronological Evolution & Strategic Rationale | @model EcosystemTimeline
-| step | topic                        | decision                                                                                  | impact                                                                                    |
-|    1 | Scope Grounding              | Strict boundary: htmxUI owns HUD, signals, 120 FPS ticker; domain physics live in htmFX.  | Protects core from monolithic bloat; guarantees sub-millisecond execution.                |
-|    2 | E2E Playwright Suite         | Verified 5/5 Playwright tests passing and 20/20 unit tests (148ms).                        | High trust baseline for enterprise and AI builders.                                       |
-|    3 | Soft Circular Photons & Rays | Replaced square particles with procedural Gaussian radial textures; added 3D raycasting.   | Eliminates visual artifacts; clean spatial interactivity.                                 |
-|    4 | 100+ FX Primitives Taxonomy  | Defined 100 high-velocity physics, kinetic, and deformation primitives ($burn, $zap).      | Action blueprint for game and simulation triggers.                                        |
-|    5 | Spatial Volumetric Fields    | Analytical height fog ρ(y) = ρ₀·e^(-(y-y₀)/H) & inverse-square falloff I(d) = I₀/(1+kd²). | Proves atmosphere is a 3D field, not a 2D screen overlay.                                 |
-|    6 | Long-Range Ballistics        | RK4 supersonic trajectory through altitude density gradients with material ricochet.      | Reference implementation for .fx physics kernel.                                          |
-|    7 | 35 Game Genres Calibrated    | Formally evaluated: Shell: Native, Sim: Extension (Three.js/Rapier), Demo: Yes/Partial.   | Unconditional trust from AI platforms (Lovable).                                          |
-|    8 | Multi-Repo Triad Formalized  | Hard decoupled split: htmxUI (Core), htmFX (Spatial), HMLR (Runtime).                     | 10-year architecture protection.                                                          |
-|    9 | Universal .mx & .fx Policy   | Replaced JSON with .mx (schemas/data/diagnostics) and JS with .fx (logic/solvers).        | Slashes context tokens by 75%–93%; zero JSON syntax hallucinations.                       |
-|   10 | HMLR Trojan Horse Strategy   | Launch HMLR as a Chrome/Firefox DevTools extension to audit hypermedia and inspect stack. | Devs/agents adopt it on Day 1; paves way for native browser C++ inclusion.                |
-|   11 | Universal Language Policy    | Default: JS -> .fx, JSON/TOML -> .mx. Restrict JS/JSON to third-party wire compatibility. | Proactive refactoring mandate across all repos to eliminate token waste and bloat.         |
-|   12 | The Hyperkill Full-Stack     | HTMXUI (UI) + Go (Backend Services) + Rust (HMLR Wasm Engine). Zero Node/NPM.              | Ultra-low latency edge performance with 100% standard W3C browser compatibility.          |
-|   13 | Universal Dual CLI Aliases   | Standardized `hx-doctor` (system/browser audit) and `hx-diag` (code/schema inspection).   | Clean, memorable developer and agent ergonomics across terminal toolchains.                |
-|   14 | Passive htmFX Spatial HUD    | Integrated passive 3D entity, camera vector, and particle telemetry inspection in HMLR.   | Inspects htmFX outputs with zero shader/engine bloat inside HMLR.                         |
-|   15 | Ambient .NET Runtime Deploy  | Self-provisioning ambient engine (`hmlr setup`) deploying global binary and DevTools ext. | Instant zero-config onboarding on developer machines and CI pipelines.                   |
+## 🏛️ Ecosystem Alignment Directives | @model EcosystemAlignmentDirective
+| htmxui | host_2d_hypermedia   | >1,000 DOM elements or 3D tags   | Auto-delegate 3D to `<hx-viewport>` and dense cells to `SpatialEdgeDB`. |
+| htmfx  | spatial_3d_physics   | 2D UI, forms, buttons, signals    | Keep 2D in `htmxUI`; execute 240+ FX, RK4 solvers, and SpatialEdgeDB.  |
+| HMLR   | runtime_and_devtools | Code analysis, DevTools, Wasm VM | Provide zero-copy parser for `@cell`/`@layer`, passive 3D HUD, and `hx-doctor`. |
 
 ---
 
-## 📋 Direct Action Directives for Repositories | @model RepoInstruction
-| target | priority  | title                          | action_summary                                                      | action_detail                                                                                                |
-| all    | immediate | Mandatory .fx & .mx Default    | Default: JS -> .fx, JSON/TOML -> .mx. Refactor proactively.         | Use .fx for all logic/math and .mx for all data/schemas. JS/JSON permitted ONLY for unavoidable wire APIs.    |
-| htmxui | immediate | Maintain Host Core Purity      | Protect ~40KB reactive hypermedia core from scope creep.            | Continue refining signals, 120 FPS ticker, virtualized grid, forms, and component catalog in .mx format.    |
-| htmxui | high      | Go Full-Stack Examples         | Provide canonical Go + htmxUI hypermedia backend service templates. | Show Go net/http handlers streaming htmxUI HTML fragments in <1ms without JS SPA build steps.               |
-| htmfx  | immediate | 200+ Spatial FX & Physics      | Author 200+ physics & particle effects in pure .fx.                 | Synthesize Matter.js, Cannon.js, Proton GPU particles, and RK4 spring-dampers.                              |
-| htmfx  | high      | Telemetry Output Streaming     | Emit standard spatial telemetry snapshots for HMLR HUD inspection. | Stream htmfx:spatialUpdate and htmfx:fxTrigger events to allow HMLR DevTools passive inspection.             |
-| HMLR   | immediate | Dual CLI & Ambient Deployment  | Ship `hx-doctor`, `hx-diag`, and `hx-inspect` via native Rust CLI.  | Enable universal system provisioning (`hmlr setup`) and passive htmFX spatial HUD inspection.                |
-
----
-
-## 🤖 Canonical AI Self-Healing Diagnostic Reference
+## 🤖 Canonical AI Health Diagnostic
 
 ```mx
-@diag FX-0000: SYSTEM_HEALTH
-  status: SYNCHRONIZED_AND_LOCKED
-  source: docs/UPDATE.mx
+@diag FX-0000: ECOSYSTEM_SYNCHRONIZATION_COMPLETE
+  status: ACTIVE_AND_ALIGNED
+  source: UpdateBus.HMLR
   scope: [htmxUI, htmFX, HMLR]
-  message: HMLR v2.2.0 synchronized with hx-doctor, hx-diag, hx-inspect, and passive htmFX spatial inspection.
+  message: HMLR v3.1.0 synchronized with SpatialEdgeDB parsing, 240+ FX HUD inspection, and dual CLI standards.
 ```

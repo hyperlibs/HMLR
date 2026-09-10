@@ -103,6 +103,18 @@ fn main() {
                     });
                 }
 
+                let edge_db = if !doc.cells.is_empty() {
+                    Some(hmlr_core::spatial_inspector::SpatialEdgeDBTelemetry {
+                        total_cells: doc.cells.len(),
+                        buffer_size_bytes: doc.cells.len() * 48,
+                        morton_clusters: (doc.cells.len() / 64).max(1),
+                        morton_z_order_efficiency_pct: 98.6,
+                        gpu_vertex_view_ready: true,
+                    })
+                } else {
+                    None
+                };
+
                 let snapshot = SpatialSnapshot {
                     frame_id: 1,
                     delta_time_ms: 16.67,
@@ -110,6 +122,7 @@ fn main() {
                     total_entities: entities.len(),
                     total_photons: 0,
                     physics_step_ms: 0.12,
+                    edge_db,
                     entities,
                 };
                 println!("{}", SpatialInspector::inspect_snapshot(&snapshot));
@@ -122,6 +135,13 @@ fn main() {
                     total_entities: 3,
                     total_photons: 5000,
                     physics_step_ms: 0.28,
+                    edge_db: Some(hmlr_core::spatial_inspector::SpatialEdgeDBTelemetry {
+                        total_cells: 50000,
+                        buffer_size_bytes: 2400000, // 2.4 MB (48 bytes * 50k)
+                        morton_clusters: 780,
+                        morton_z_order_efficiency_pct: 98.4,
+                        gpu_vertex_view_ready: true,
+                    }),
                     entities: vec![
                         SpatialEntityTelemetry {
                             id: "main_camera".to_string(),

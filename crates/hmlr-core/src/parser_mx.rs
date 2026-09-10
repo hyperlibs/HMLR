@@ -1,5 +1,5 @@
 //! HMLR Zero-Copy Streaming .mx Parser
-//! Blazing fast, zero-heap-allocation parser for flat spatial coordinate & tabular documents.
+//! Blazing fast, zero-heap-allocation parser for flat spatial coordinate, SpatialEdgeDB & tabular documents.
 
 use std::collections::HashMap;
 
@@ -9,6 +9,24 @@ pub struct MXPin<'a> {
     pub x: f64,
     pub y: f64,
     pub z: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MXCell<'a> {
+    pub id: &'a str,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub layer: u16,
+    pub intensity: f32,
+    pub morton_code: u64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MXLayer<'a> {
+    pub id: &'a str,
+    pub name: &'a str,
+    pub opacity: f32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -24,6 +42,8 @@ pub struct MXDocument<'a> {
     pub models: HashMap<&'a str, Vec<(&'a str, &'a str)>>,
     pub tables: Vec<MXTable<'a>>,
     pub pins: Vec<MXPin<'a>>,
+    pub cells: Vec<MXCell<'a>>,
+    pub layers: Vec<MXLayer<'a>>,
     pub diags: Vec<&'a str>,
 }
 
@@ -34,6 +54,8 @@ impl<'a> MXDocument<'a> {
             models: HashMap::new(),
             tables: Vec::new(),
             pins: Vec::new(),
+            cells: Vec::new(),
+            layers: Vec::new(),
             diags: Vec::new(),
         }
     }
@@ -98,6 +120,24 @@ impl MXParser {
                 state = SectionState::None;
                 if let Some(pin) = Self::parse_pin(line) {
                     doc.pins.push(pin);
+                }
+                continue;
+            }
+
+            // SpatialEdgeDB Flat Cell Records: @cell id (x, y, z) layer=1 intensity=1.0 morton=12345
+            if line.starts_with("@cell") {
+                state = SectionState::None;
+                if let Some(cell) = Self::parse_cell(line) {
+                    doc.cells.push(cell);
+                }
+                continue;
+            }
+
+            // SpatialEdgeDB Layers: @layer id name="Tumor Stroma" opacity=0.85
+            if line.starts_with("@layer") {
+                state = SectionState::None;
+                if let Some(layer) = Self::parse_layer(line) {
+                    doc.layers.push(layer);
                 }
                 continue;
             }
@@ -213,5 +253,78 @@ impl MXParser {
         } else {
             None
         }
+    }
+
+    fn parse_cell<'a>(line: &'a str) -> Option<MXCell<'a>> {
+        // e.g. @cell C_1001 (12.4, 45.2, -1.0) layer=1 intensity=0.92 morton=48291
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() < 3 {
+            return None;
+        }
+        let id = parts[1];
+        let open_p = line.find('(')?;
+        let close_p = line.find(')')?;
+        let coords_str = &line[open_p + 1..close_p];
+        let nums: Vec<f64> = coords_str
+            .split(',')
+            .filter_map(|s| s.trim().parse::<f64>().ok())
+            .collect();
+
+        if nums.len() < 3 {
+            return None;
+        }
+
+        let mut layer: u16 = 0;
+        let mut intensity: f32 = 1.0;
+        let mut morton: u64 = 0;
+
+        for part in &parts[2..] {
+            if let Some((k, v)) = part.split_once('=') {
+                match k {
+                    "layer" => layer = v.parse().unwrap_or(0),
+                    "intensity" => intensity = v.parse().unwrap_or(1.0),
+                    "morton" => morton = v.parse().unwrap_or(0),
+                    _ => {}
+                }
+            }
+        }
+
+        Some(MXCell {
+            id,
+            x: nums[0],
+            y: nums[1],
+            z: nums[2],
+            layer,
+            intensity,
+            morton_code: morton,
+        })
+    }
+
+    fn parse_layer<'a>(line: &'a str) -> Option<MXLayer<'a>> {
+        // e.g. @layer L1 name="Tumor" opacity=0.9
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() < 2 {
+            return None;
+        }
+        let id = parts[1];
+        let mut name = "Layer";
+        let mut opacity = 1.0f32;
+
+        if let Some(n_idx) = line.find("name=\"") {
+            let rest = &line[n_idx + 6..];
+            if let Some(end_idx) = rest.find('"') {
+                name = &rest[..end_idx];
+            }
+        }
+
+        for part in &parts[2..] {
+            if let Some((k, v)) = part.split_once('=') {
+                if k == "opacity" {
+                    opacity = v.parse().unwrap_or(1.0);
+                }
+            }
+        }
+
+        Some(MXLayer { id, name, opacity })
     }
 }

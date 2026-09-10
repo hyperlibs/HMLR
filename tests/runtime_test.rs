@@ -100,6 +100,7 @@ fn test_spatial_htmfx_inspector() {
         total_entities: 1,
         total_photons: 1000,
         physics_step_ms: 0.15,
+        edge_db: None,
         entities: vec![SpatialEntityTelemetry {
             id: "hero_box".to_string(),
             entity_type: "VolumetricBox".to_string(),
@@ -117,4 +118,24 @@ fn test_spatial_htmfx_inspector() {
     assert!(output.contains("@model SpatialEntityStatus"));
     assert!(output.contains("hero_box"));
     assert!(output.contains("VolumetricBox"));
+}
+
+#[test]
+fn test_spatial_edge_db_parsing() {
+    let raw_mx = r#"
+@meta
+  dataset: "Multi-Scale Tumor Atlas"
+
+@layer L1 name="Tumor Stroma" opacity=0.85
+@layer L2 name="Immune Infiltrate" opacity=0.95
+
+@cell C_001 (10.5, 20.0, -5.2) layer=1 intensity=0.95 morton=48201
+@cell C_002 (11.0, 20.5, -5.0) layer=2 intensity=0.78 morton=48202
+"#;
+    let doc = MXParser::parse(raw_mx);
+    assert_eq!(doc.layers.len(), 2, "Must parse 2 SpatialEdgeDB layers");
+    assert_eq!(doc.layers[0].name, "Tumor Stroma");
+    assert_eq!(doc.cells.len(), 2, "Must parse 2 flat SpatialEdgeDB cells");
+    assert_eq!(doc.cells[0].id, "C_001");
+    assert_eq!(doc.cells[0].morton_code, 48201);
 }

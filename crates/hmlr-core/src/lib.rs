@@ -7,7 +7,7 @@ pub mod diagnostics;
 pub mod installer;
 pub mod spatial_inspector;
 
-pub use parser_mx::{MXDocument, MXParser, MXPin, MXTable};
+pub use parser_mx::{MXCell, MXDocument, MXLayer, MXParser, MXPin, MXTable};
 pub use hir::{HIREnv, HIREvaluator, HIRNode, HIRVal};
 pub use diagnostics::{Diagnostic, DiagnosticEngine};
 pub use installer::{BrowserInfo, HMLRProvisioner, SystemEnvironmentReport};

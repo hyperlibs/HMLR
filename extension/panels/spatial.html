@@ -13,12 +13,19 @@
       --purple: #bc8cff;
       --accent: #58a6ff;
       --green: #3fb950;
+      --orange: #f0883e;
     }
     * { box-sizing: border-box; }
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--bg); color: var(--text); margin: 0; padding: 16px; font-size: 12px; }
     header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 16px; }
     h1 { font-size: 15px; margin: 0; color: var(--purple); display: flex; align-items: center; gap: 8px; }
     
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+    .card-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .card-val { font-size: 16px; font-weight: bold; color: var(--text); }
+    .card-sub { font-size: 10px; color: var(--green); margin-top: 2px; }
+
     .banner-isolation { background: #1b1726; border: 1px solid #58339c; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
     .coord-val { color: var(--accent); font-weight: bold; }
 
@@ -29,18 +36,43 @@
     
     .type-pin { color: #58a6ff; font-weight: bold; }
     .type-3d { color: #bc8cff; font-weight: bold; }
+    .type-cell { color: #f0883e; font-weight: bold; }
   </style>
 </head>
 <body>
   <header>
-    <h1>📐 3D Spatial Entity HUD</h1>
-    <div style="font-size:10px;color:var(--text-muted);">Passive Coordinate Inspector</div>
+    <h1>📐 3D Spatial Entity HUD & SpatialEdgeDB Monitor</h1>
+    <div style="font-size:10px;color:var(--text-muted);">htmFX v1.2.0 Telemetry Stream</div>
   </header>
+
+  <div class="metrics-grid">
+    <div class="card">
+      <div class="card-title">SpatialEdgeDB Cells</div>
+      <div class="card-val" id="db-cells" style="color:var(--orange);">50,000</div>
+      <div class="card-sub">Flat 48-byte packed buffers</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Morton Z-Clustering</div>
+      <div class="card-val" id="morton-eff" style="color:var(--green);">98.4%</div>
+      <div class="card-sub">Zero DOM nesting overhead</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Active FX Photons</div>
+      <div class="card-val" id="active-photons" style="color:var(--accent);">12,400</div>
+      <div class="card-sub">240+ Preset Catalogue</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Physics Step Time</div>
+      <div class="card-val" id="physics-time">0.18 ms</div>
+      <div class="card-sub">RK4 Supersonic Mach Solver</div>
+    </div>
+  </div>
 
   <div class="banner-isolation">
     <div><strong>Ecosystem Boundary Locked:</strong> Zero 3D shader / physics overhead inside HMLR. 3D rendering and physics engines are isolated exclusively in <code>htmFX</code>.</div>
   </div>
 
+  <h3 style="font-size:12px;margin:16px 0 8px 0;color:var(--text-muted);text-transform:uppercase;">Spatial Entities & Anchor Registry</h3>
   <table>
     <thead>
       <tr>
@@ -70,12 +102,12 @@
         <td>material: "pbr_rough", physics: true</td>
       </tr>
       <tr>
-        <td><code>@pin sun_light</code></td>
-        <td><span class="type-pin">DirectionalPhoton</span></td>
-        <td><span class="coord-val">(10.00, 25.00, 10.00)</span></td>
-        <td>(-45.0°, 30.0°, 0.0°)</td>
+        <td><code>@cell cluster_alpha</code></td>
+        <td><span class="type-cell">SpatialEdgeDB (48B)</span></td>
+        <td><span class="coord-val">(12.4, 45.2, -1.0)</span></td>
+        <td>(0.0°, 0.0°, 0.0°)</td>
         <td>[1.0, 1.0, 1.0]</td>
-        <td>intensity: 1.2, shadow: true</td>
+        <td>layer: 1, morton: 48291, intensity: 0.92</td>
       </tr>
       <tr>
         <td><code>@3d particle_field</code></td>
