@@ -2,8 +2,8 @@
 //! Zero-Node, pure native test verification.
 
 use hmlr_core::{
-    MXParser, HIREnv, HIREvaluator, HIRNode, HIRVal, HMLRProvisioner,
-    SpatialEntityTelemetry, SpatialInspector, SpatialSnapshot,
+    DiagnosticEngine, HIREnv, HIREvaluator, HIRNode, HIRVal, HMLRProvisioner,
+    MXParser, SpatialEntityTelemetry, SpatialInspector, SpatialSnapshot,
 };
 use std::collections::HashMap;
 use std::fs;
@@ -51,6 +51,7 @@ fn test_parse_grammar_and_codes_mx() {
     let codes_content = get_workspace_file("src/diagnostics/codes.mx");
     let doc_codes = MXParser::parse(&codes_content);
     assert!(doc_codes.tables.iter().any(|t| t.model == "DiagnosticSpec"));
+    assert!(codes_content.contains("FX-0105"), "Must include FX-0105 linter rule");
 }
 
 #[test]
@@ -138,4 +139,31 @@ fn test_spatial_edge_db_parsing() {
     assert_eq!(doc.cells.len(), 2, "Must parse 2 flat SpatialEdgeDB cells");
     assert_eq!(doc.cells[0].id, "C_001");
     assert_eq!(doc.cells[0].morton_code, 48201);
+}
+
+#[test]
+fn test_matrix_delta_parsing() {
+    let raw_deltas = r#"
+Δ14:3:$9,450.00:bg-emerald-500
+Δ15:4:Approved
+@delta 16:5:Pending:bg-amber-500
+"#;
+    let doc = MXParser::parse(raw_deltas);
+    assert_eq!(doc.deltas.len(), 3, "Must parse 3 matrix deltas");
+    assert_eq!(doc.deltas[0].row, 14);
+    assert_eq!(doc.deltas[0].col, 3);
+    assert_eq!(doc.deltas[0].value, "$9,450.00");
+    assert_eq!(doc.deltas[0].flash_class, Some("bg-emerald-500"));
+}
+
+#[test]
+fn test_htmx2_linter_rule_fx0105() {
+    let bad_markup = r#"<button hx-on:click="alert('bad')">Submit</button>"#;
+    let diags = DiagnosticEngine::validate_htmx_template(bad_markup);
+    assert_eq!(diags.len(), 1);
+    assert_eq!(diags[0].code, "FX-0105");
+
+    let good_markup = r#"<button @click="count++">Submit</button>"#;
+    let diags_good = DiagnosticEngine::validate_htmx_template(good_markup);
+    assert_eq!(diags_good.len(), 0);
 }

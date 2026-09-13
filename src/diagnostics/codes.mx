@@ -1,11 +1,11 @@
 @meta
   catalog: "HMLR Diagnostic Codes"
   prefix: "FX"
-  version: "1.0.0"
+  version: "1.2.0"
   status: "ACTIVE"
 
 @type Severity = error* | warning | hint
-@type DiagnosticDomain = Syntax* | Boundary | Type | Velocity | Sync
+@type DiagnosticDomain = Syntax* | Boundary | Type | Velocity | Sync | Security
 
 @model DiagnosticSpec
   code: string
@@ -21,6 +21,7 @@ Deterministic error codes enabling autonomous AI agent remediation and ecosystem
 
 ## 📋 Diagnostic Matrix | @model DiagnosticSpec
 | code    | domain   | severity | title                                                            | repair_strategy                                                                                             |
+| FX-0105 | Syntax   | warning  | Unescaped hx-on:click detected in HTMX 2 environment             | Replace `hx-on:click` with `@click` or `hx-action` to prevent HTMX 2 window global scope evaluation errors.|
 | FX-1001 | Syntax   | error    | Invalid .mx syntax or directive format                           | Correct directive header to match @meta, @type, @model, @pin, @3d, or @diag                                 |
 | FX-1002 | Syntax   | warning  | Table without declared @model schema                             | Declare @model ModelName above table with typed field definitions                                           |
 | FX-1003 | Syntax   | error    | Malformed spatial coordinate tuple                               | Format coordinates as (x, y) or (x, y, z) with valid floating-point numbers                                 |

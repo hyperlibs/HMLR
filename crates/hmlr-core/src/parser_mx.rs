@@ -30,6 +30,14 @@ pub struct MXLayer<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct MXMatrixDelta<'a> {
+    pub row: usize,
+    pub col: usize,
+    pub value: &'a str,
+    pub flash_class: Option<&'a str>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct MXTable<'a> {
     pub model: &'a str,
     pub headers: Vec<&'a str>,
@@ -44,6 +52,7 @@ pub struct MXDocument<'a> {
     pub pins: Vec<MXPin<'a>>,
     pub cells: Vec<MXCell<'a>>,
     pub layers: Vec<MXLayer<'a>>,
+    pub deltas: Vec<MXMatrixDelta<'a>>,
     pub diags: Vec<&'a str>,
 }
 
@@ -56,6 +65,7 @@ impl<'a> MXDocument<'a> {
             pins: Vec::new(),
             cells: Vec::new(),
             layers: Vec::new(),
+            deltas: Vec::new(),
             diags: Vec::new(),
         }
     }
@@ -138,6 +148,15 @@ impl MXParser {
                 state = SectionState::None;
                 if let Some(layer) = Self::parse_layer(line) {
                     doc.layers.push(layer);
+                }
+                continue;
+            }
+
+            // Hypersheet / Virtual Data Grid 2D Matrix Delta: Δrow:col:val[:flashClass] or @delta row:col:val
+            if line.starts_with('Δ') || line.starts_with("@delta") {
+                state = SectionState::None;
+                if let Some(delta) = Self::parse_delta(line) {
+                    doc.deltas.push(delta);
                 }
                 continue;
             }
@@ -256,7 +275,6 @@ impl MXParser {
     }
 
     fn parse_cell<'a>(line: &'a str) -> Option<MXCell<'a>> {
-        // e.g. @cell C_1001 (12.4, 45.2, -1.0) layer=1 intensity=0.92 morton=48291
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() < 3 {
             return None;
@@ -301,7 +319,6 @@ impl MXParser {
     }
 
     fn parse_layer<'a>(line: &'a str) -> Option<MXLayer<'a>> {
-        // e.g. @layer L1 name="Tumor" opacity=0.9
         let parts: Vec<&str> = line.split_whitespace().collect();
         if parts.len() < 2 {
             return None;
@@ -326,5 +343,33 @@ impl MXParser {
         }
 
         Some(MXLayer { id, name, opacity })
+    }
+
+    fn parse_delta<'a>(line: &'a str) -> Option<MXMatrixDelta<'a>> {
+        // e.g. "Δ14:3:$9,450.00:bg-emerald-500" or "@delta 14:3:val"
+        let raw = if line.starts_with('Δ') {
+            &line['Δ'.len_utf8()..]
+        } else if line.starts_with("@delta") {
+            line[6..].trim()
+        } else {
+            line
+        };
+
+        let parts: Vec<&'a str> = raw.split(':').collect();
+        if parts.len() < 3 {
+            return None;
+        }
+
+        let row: usize = parts[0].trim().parse().ok()?;
+        let col: usize = parts[1].trim().parse().ok()?;
+        let value = parts[2].trim();
+        let flash_class = if parts.len() > 3 { Some(parts[3].trim()) } else { None };
+
+        Some(MXMatrixDelta {
+            row,
+            col,
+            value,
+            flash_class,
+        })
     }
 }

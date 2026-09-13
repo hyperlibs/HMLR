@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>HMLR Reactive Signals Inspector</title>
+  <title>HMLR Reactive Signals & State Inspector</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -13,6 +13,7 @@
       --accent: #58a6ff;
       --green: #3fb950;
       --purple: #bc8cff;
+      --orange: #f0883e;
     }
     * { box-sizing: border-box; }
     body { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; background: var(--bg); color: var(--text); margin: 0; padding: 16px; font-size: 12px; }
@@ -21,43 +22,59 @@
     .controls { display: flex; gap: 8px; margin-bottom: 12px; }
     input[type="text"] { background: #010409; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 4px; font-family: inherit; font-size: 11px; flex: 1; }
     
-    .stats-bar { display: flex; gap: 16px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 11px; }
-    .stat-item { display: flex; align-items: center; gap: 6px; }
-    .stat-val { font-weight: bold; color: var(--accent); }
+    .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; font-size: 11px; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+    .stat-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+    .stat-val { font-size: 16px; font-weight: bold; color: var(--text); }
 
-    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 16px; }
     th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; }
     th { background: var(--card-bg); color: var(--text-muted); font-weight: 600; }
     tbody tr:hover { background: #161b2280; }
     
     .badge-hz { background: #23863633; color: var(--green); border: 1px solid #238636; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
     .badge-sub { background: #8957e533; color: var(--purple); border: 1px solid #8957e5; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
+    .badge-scope { background: #f0883e33; color: var(--orange); border: 1px solid #f0883e; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>⚡ HMLR Reactive Signals Inspector</h1>
-    <div style="font-size:10px;color:var(--text-muted);">Zero Memory Leak Architecture</div>
+    <h1>⚡ HMLR Reactive Signals & State Inspector</h1>
+    <div style="font-size:10px;color:var(--text-muted);">HTMXUI v3.2.0 Core Alignment</div>
   </header>
 
   <div class="stats-bar">
-    <div class="stat-item">Active Signals: <span class="stat-val" id="count-signals">8</span></div>
-    <div class="stat-item">Total Observers: <span class="stat-val" id="count-observers">22</span></div>
-    <div class="stat-item">Cascade Update Rate: <span class="stat-val" style="color:var(--green);">120 FPS Locked</span></div>
+    <div class="stat-card">
+      <div class="stat-title">Active Signals</div>
+      <div class="stat-val" id="count-signals">12</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Scoped hx-for Loops</div>
+      <div class="stat-val" id="count-loops" style="color:var(--orange);">4 Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Offline Replay Queue</div>
+      <div class="stat-val" id="count-offline" style="color:var(--green);">0 Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">HxBolt 120 FPS Ticker</div>
+      <div class="stat-val" style="color:var(--green);">LOCKED (120 Hz)</div>
+    </div>
   </div>
 
   <div class="controls">
-    <input type="text" id="filter-input" placeholder="Filter signals by key (e.g. sys.fps, camera, hud)...">
+    <input type="text" id="filter-input" placeholder="Filter signals, scoped loop variables, or state keys (e.g. ord, user, sys.fps)...">
   </div>
 
+  <h3 style="font-size:12px;margin:16px 0 8px 0;color:var(--text-muted);text-transform:uppercase;">Global & Scoped Signal Tree</h3>
   <table>
     <thead>
       <tr>
-        <th>Signal ID</th>
-        <th>Live State / Value</th>
-        <th>Subscribed DOM Nodes</th>
+        <th>Signal ID / Scope</th>
+        <th>Live Value / State</th>
+        <th>Subscribed Elements</th>
         <th>Cascade Frequency</th>
-        <th>Last Updated</th>
+        <th>Scope Type</th>
       </tr>
     </thead>
     <tbody id="signals-body">
@@ -66,28 +83,28 @@
         <td><strong style="color:var(--green);">120.0</strong></td>
         <td><span class="badge-sub">4 elements</span></td>
         <td><span class="badge-hz">120 Hz</span></td>
-        <td>Just now</td>
+        <td><span class="badge-sub">GLOBAL</span></td>
       </tr>
       <tr>
-        <td><code>camera.pos</code></td>
-        <td><code>[0.0, 1.8, 5.0]</code></td>
-        <td><span class="badge-sub">2 elements</span></td>
-        <td><span class="badge-hz">60 Hz</span></td>
-        <td>Just now</td>
-      </tr>
-      <tr>
-        <td><code>hud.active_tab</code></td>
-        <td><code>"velocity_audit"</code></td>
+        <td><code>ord.totalAmount</code></td>
+        <td><code>"$9,450.00"</code></td>
         <td><span class="badge-sub">1 element</span></td>
         <td><span class="badge-hz">0 Hz (Idle)</span></td>
-        <td>2s ago</td>
+        <td><span class="badge-scope">hx-for (ord)</span></td>
       </tr>
       <tr>
-        <td><code>spatial.raycast_hit</code></td>
-        <td><code>"hero_mesh"</code></td>
-        <td><span class="badge-sub">3 elements</span></td>
-        <td><span class="badge-hz">12 Hz</span></td>
-        <td>140ms ago</td>
+        <td><code>user.role</code></td>
+        <td><code>"Admin"</code></td>
+        <td><span class="badge-sub">2 elements</span></td>
+        <td><span class="badge-hz">0 Hz</span></td>
+        <td><span class="badge-scope">hx-for (user)</span></td>
+      </tr>
+      <tr>
+        <td><code>grid.delta_stream</code></td>
+        <td><code>"Δ14:3:$9,450.00"</code></td>
+        <td><span class="badge-sub">Hypersheet Virtual Grid</span></td>
+        <td><span class="badge-hz">60 Hz</span></td>
+        <td><span class="badge-sub">2D MATRIX</span></td>
       </tr>
     </tbody>
   </table>

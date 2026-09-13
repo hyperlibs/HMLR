@@ -32,6 +32,22 @@ impl DiagnosticEngine {
         diags
     }
 
+    /// Linter for HTMX 2 markup conventions
+    pub fn validate_htmx_template(template_html: &str) -> Vec<Diagnostic> {
+        let mut diags = Vec::new();
+
+        if template_html.contains("hx-on:click") {
+            diags.push(Diagnostic {
+                code: "FX-0105",
+                severity: "warning",
+                message: "Unescaped 'hx-on:click' detected in HTMX 2 markup".to_string(),
+                fix: "Use '@click' or 'hx-action' to prevent HTMX 2 window global scope evaluation leakage",
+            });
+        }
+
+        diags
+    }
+
     pub fn format_diag(diag: &Diagnostic) -> String {
         format!(
             "@diag {} {} \"{}\" fix=\"{}\"",
