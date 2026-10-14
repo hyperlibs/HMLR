@@ -4,9 +4,9 @@
   version: 1.0.0
   runtime: hmlr@1.0
   repo: github.com/hyperlibs/HMLR
-  ecosystem_host: github.com/hyperlibs/htmxUI
+  ecosystem_host: github.com/hyperlibs/htmxpro
   ecosystem_spatial: github.com/hyperlibs/htmfx
-  sync_bus: https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx
+  sync_bus: https://raw.githubusercontent.com/hyperlibs/htmxpro/master/docs/UPDATE.mx
 
 @type Subsystem = extension* | wasm_vm | compiler_fx | parser_mx | diagnostics
 @type Status = active* | planned | peer_synced
@@ -49,7 +49,7 @@ It executes `.fx` functional programs and `.mx` spatial documents natively, prov
 
 ## 🌐 Ecosystem Communication Bus Protocol | @model BusProtocol
 | rule                  | mechanism                                                                                 | format                                                     |
-| Periodic Sync Pull    | HMLR reads https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx        | Pure .mx (@feed BuildFeed, @model EcosystemTimeline)       |
+| Periodic Sync Pull    | HMLR reads https://raw.githubusercontent.com/hyperlibs/htmxpro/master/docs/UPDATE.mx       | Pure .mx (@feed BuildFeed, @model EcosystemTimeline)       |
 | Directives Ingestion  | Ingest table @model RepoInstruction where target == "HMLR" or target == "all"             | Deterministic tabular action items (action_summary/detail) |
 | Feedback & Status Out | HMLR emits its build, test, and boundary status back in pure .mx syntax                   | @model BoundaryVerification & @diag FX-XXXX                |
 | Zero Polling Overhead | Sync occurs upon git commit trigger or developer command "UPDATE.mx"                      | Event-driven master bus                                    |
@@ -57,7 +57,7 @@ It executes `.fx` functional programs and `.mx` spatial documents natively, prov
 ---
 
 ## ⛔ Hard Prohibitions for HMLR
-1. **NO UI REIMPLEMENTATION**: Do NOT build buttons, form controls, or Tailwind widgets inside HMLR. All UI primitives belong exclusively to `htmxUI`.
+1. **NO UI REIMPLEMENTATION**: Do NOT build buttons, form controls, or Tailwind widgets inside HMLR. All UI primitives belong exclusively to `HTMX PRO`.
 2. **NO 3D SHADER REIMPLEMENTATION**: Do NOT implement 3D rendering engines or physics shaders inside HMLR. All 3D spatial viewports belong exclusively to `htmFX`.
 3. **NO JSON FOR INTERNAL SCHEMAS**: All configs, diagnostics, and data streams inside HMLR MUST use `.mx` and `.fx`. JSON is reserved exclusively for external third-party network boundaries.
 4. **NO HEAVY RUNTIMES**: Do NOT rely on Node.js runtime built-ins (`fs`, `child_process`). The runtime must target Wasm, Edge Workers, and WebExtensions natively.
